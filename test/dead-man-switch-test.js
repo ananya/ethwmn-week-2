@@ -5,9 +5,10 @@ describe("DeadManSwitch", function () {
   let owner;
   let nominee;
   let deadmanswitch;
+  let address1;
 
   beforeEach(async function () {
-    [owner, nominee] = await ethers.getSigners();
+    [owner, nominee, address1] = await ethers.getSigners();
     const DeadManSwitch = await ethers.getContractFactory("DeadManSwitch");
     deadmanswitch = await DeadManSwitch.deploy(nominee.address);
     await deadmanswitch.deployed();
@@ -40,6 +41,9 @@ describe("DeadManSwitch", function () {
       await deadmanswitch.stillAlive();
       const currentBlockNumber = await ethers.provider.getBlockNumber();
       expect(await deadmanswitch.last_alive_block()).to.equal(currentBlockNumber);
+    });
+    it("should raise error if not called by owner of contract", async function () {
+      await expect(deadmanswitch.connect(address1).stillAlive()).to.be.revertedWith("Only owner can call this function");
     });
   });
 
