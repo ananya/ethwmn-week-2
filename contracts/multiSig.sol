@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity >=0.7.0 <0.9.0;
-import "hardhat/console.sol";
 
 contract MultiSig {
 
@@ -56,6 +55,8 @@ contract MultiSig {
     _;
   }
 
+  receive() external payable {}
+  
   constructor(address[] memory _signers, uint _threshold) validThreshold( _threshold) {
     threshold = _threshold;
     signers = _signers;
@@ -110,7 +111,7 @@ contract MultiSig {
     isConfirmed[_index][msg.sender] = true;
   }
 
-  function executeTransaction(uint _index) public payable onlySigners txExists(_index) txNotExecuted(_index) thresholdMet(_index) {
+  function executeTransaction(uint _index) public onlySigners txExists(_index) txNotExecuted(_index) thresholdMet(_index) {
     Transaction storage transaction = transactions[_index];
     address payable _to = transaction.to;
     (bool sent, ) = _to.call{value: transaction.value}("");
