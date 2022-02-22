@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
+// depolyed: https://goerli.etherscan.io/address/0xd3419be78c449c052416970763eb15c3a518b44e
 
 pragma solidity >=0.7.0 <0.9.0;
 import "hardhat/console.sol";
@@ -67,6 +68,10 @@ contract MultiSig {
     return signers;
   }
 
+  function getTransactions() public view returns (Transaction[] memory) {
+    return transactions;
+  }
+
   function getThreshold() public view returns (uint) {
     return threshold;
   }
@@ -115,9 +120,8 @@ contract MultiSig {
   function executeTransaction(uint _index) public onlySigners txExists(_index) txNotExecuted(_index) thresholdMet(_index) {
     Transaction storage transaction = transactions[_index];
     address payable _to = transaction.to;
-    console.log(_to, transaction.value);
-    (bool sent, ) = _to.call{value: transaction.value}("");
-    
+    (bool sent, bytes memory data) = _to.call{value: transaction.value}("");
+
     require(sent, "tx failed");
     transaction.executed = sent;
   }

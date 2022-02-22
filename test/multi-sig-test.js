@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { BigNumber} = require("bignumber.js");
 
 describe("MultiSig", function () {
   let signer1;
@@ -145,15 +146,18 @@ describe("MultiSig", function () {
       await expect(multisig.confirmTransaction(0)).to.be.revertedWith("Transaction has already been confirmed by you");
     })
 
-    // it.only("should raise error if transaction already executed", async function () {
-    //   await multisig.submitTransaction(signer4.address, 1);
-    //   await multisig.confirmTransaction(0);
-    //   await multisig.connect(signer2).confirmTransaction(0);
-    //   await multisig.executeTransaction(0);
-    //   const transaction = await multisig.getTransaction(0);
-    //   expect(transaction.executed).to.equal(true);
-    //   await expect(multisig.connect(signer3).confirmTransaction(0)).to.be.revertedWith("Transaction has already been executed");
-    // })
+    it("should raise error if transaction already executed", async function () {
+      await multisig.submitTransaction(signer4.address, 1);
+      await multisig.confirmTransaction(0);
+      await multisig.connect(signer2).confirmTransaction(0);
+
+      await signer1.sendTransaction({ from:signer1.address, to: multisig.address, value: 1000000000000 });
+
+      await multisig.executeTransaction(0);
+      const transaction = await multisig.getTransaction(0);
+      expect(transaction.executed).to.equal(true);
+      await expect(multisig.connect(signer3).confirmTransaction(0)).to.be.revertedWith("Transaction has already been executed");
+    })
   })
 
   describe("executeTransaction", function () {
@@ -161,14 +165,17 @@ describe("MultiSig", function () {
       await expect(multisig.connect(signer5).executeTransaction(0)).to.be.revertedWith("Only signers can call this function");
     })
 
-    // it.only("should execute transaction if threshold met", async function () {
-    //   await multisig.submitTransaction(signer4.address, 1);
-    //   await multisig.confirmTransaction(0);
-    //   await multisig.connect(signer2).confirmTransaction(0);
-    //   await multisig.executeTransaction(0);
-    //   const transaction = await multisig.getTransaction(0);
-    //   expect(transaction.executed).to.equal(true);
-    // })
+    it("should execute transaction if threshold met", async function () {
+      await multisig.submitTransaction(signer4.address, 1);
+      await multisig.confirmTransaction(0);
+      await multisig.connect(signer2).confirmTransaction(0);
+
+      await signer1.sendTransaction({ from:signer1.address, to: multisig.address, value: 1000000000000 });
+
+      await multisig.executeTransaction(0);
+      const transaction = await multisig.getTransaction(0);
+      expect(transaction.executed).to.equal(true);
+    })
 
     it("should raise error if threshold not met", async function () {
       await multisig.submitTransaction(signer4.address, 1);
@@ -179,12 +186,15 @@ describe("MultiSig", function () {
       await expect(multisig.executeTransaction(1)).to.be.revertedWith("Transaction does not exist");
     })
 
-    // it("should raise error if transaction already executed", async function () {
-    //   await multisig.submitTransaction(signer4.address, 1);
-    //   await multisig.confirmTransaction(0);
-    //   await multisig.connect(signer2).confirmTransaction(0);
-    //   await multisig.executeTransaction(0);
-    //   await expect(multisig.executeTransaction(0)).to.be.revertedWith("Transaction has already been executed");
-    // })
+    it("should raise error if transaction already executed", async function () {
+      await multisig.submitTransaction(signer4.address, 1);
+      await multisig.confirmTransaction(0);
+      await multisig.connect(signer2).confirmTransaction(0);
+
+      await signer1.sendTransaction({ from:signer1.address, to: multisig.address, value: 1000000000000 });
+
+      await multisig.executeTransaction(0);
+      await expect(multisig.executeTransaction(0)).to.be.revertedWith("Transaction has already been executed");
+    })
   })
 })
