@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
+// deployed contract: https://goerli.etherscan.io/address/0x49542d6217cdf98fd80747a48fb59235b53d6a32
 
 pragma solidity >=0.7.0 <0.9.0;
 import "hardhat/console.sol";

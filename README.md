@@ -1,15 +1,4 @@
-# Basic Sample Hardhat Project
+# Solutions for week2 assignment
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+1. ERC20 token contract: https://goerli.etherscan.io/address/0xae35ea63840ba8f31589c6feab7624a0b2aca199
+2. Uniswap pool for the token: https://goerli.etherscan.io/address/0x7aa04ce93f5093a19bc6791210de30f9922213aa
