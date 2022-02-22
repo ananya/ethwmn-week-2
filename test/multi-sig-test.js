@@ -30,12 +30,12 @@ describe("MultiSig", function () {
       expect(signers).to.deep.equal([signer1.address, signer2.address, signer3.address]);
     });
 
-    // it("should raise error if threshold is more than signers", async function () {
-    //   const MultiSig = await ethers.getContractFactory("MultiSig");
-    //   await expect( MultiSig.deploy(
-    //     [signer1.address, signer2.address, signer3.address], 4
-    //     )).to.be.revertedWith("Threshold must be less than or equal to number of signers");
-    // })
+    it("should raise error if threshold is more than signers", async function () {
+      const MultiSig = await ethers.getContractFactory("MultiSig");
+      await expect( MultiSig.deploy(
+        [signer1.address, signer2.address, signer3.address], 4
+        )).to.be.revertedWith("Threshold must be less than or equal to the number of signers");
+    })
   });
 
   describe("getSigner", function () {
@@ -125,19 +125,15 @@ describe("MultiSig", function () {
       await multisig.submitTransaction(signer4.address, 1);
       await multisig.confirmTransaction(0);
       const transaction = await multisig.getTransaction(0);
-      console.log(transaction);
       expect(transaction.confirmations).to.deep.equal(1);
     })
 
-    // it("should add mapping transaction -> signer -> status", async function (){
-    //   await multisig.submitTransaction(signer4.address, 1);
-    //   await multisig.confirmTransaction(0);
-    //   console.log(signer4.address)
-    //   const signerAdd = signer4.address;
-    //   console.log("signerAdd", signerAdd)
-    //   const status = multisig.isConfirmed[0][signerAdd];
-    //   expect(status).to.equal(true);
-    // })
+    it("should add mapping transaction -> signer -> status", async function (){
+      await multisig.submitTransaction(signer4.address, 1);
+      await multisig.confirmTransaction(0);
+      const status = await multisig.isConfirmed(0, signer1.address);
+      expect(status).to.equal(true);
+    })
 
     it("should raise error if transaction not found", async function () {
       await expect(multisig.confirmTransaction(1)).to.be.revertedWith("Transaction does not exist");
@@ -149,7 +145,7 @@ describe("MultiSig", function () {
       await expect(multisig.confirmTransaction(0)).to.be.revertedWith("Transaction has already been confirmed by you");
     })
 
-    // it("should raise error if transaction already executed", async function () {
+    // it.only("should raise error if transaction already executed", async function () {
     //   await multisig.submitTransaction(signer4.address, 1);
     //   await multisig.confirmTransaction(0);
     //   await multisig.connect(signer2).confirmTransaction(0);
@@ -165,7 +161,7 @@ describe("MultiSig", function () {
       await expect(multisig.connect(signer5).executeTransaction(0)).to.be.revertedWith("Only signers can call this function");
     })
 
-    // it("should execute transaction if threshold met", async function () {
+    // it.only("should execute transaction if threshold met", async function () {
     //   await multisig.submitTransaction(signer4.address, 1);
     //   await multisig.confirmTransaction(0);
     //   await multisig.connect(signer2).confirmTransaction(0);

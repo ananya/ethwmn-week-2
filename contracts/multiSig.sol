@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity >=0.7.0 <0.9.0;
+import "hardhat/console.sol";
 
 contract MultiSig {
 
@@ -114,6 +115,7 @@ contract MultiSig {
   function executeTransaction(uint _index) public onlySigners txExists(_index) txNotExecuted(_index) thresholdMet(_index) {
     Transaction storage transaction = transactions[_index];
     address payable _to = transaction.to;
+    console.log(_to, transaction.value);
     (bool sent, ) = _to.call{value: transaction.value}("");
     
     require(sent, "tx failed");
